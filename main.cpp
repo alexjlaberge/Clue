@@ -4,64 +4,14 @@
 #include <string>
 #include <map>
 #include <algorithm>
+#include "player.h"
 
 using namespace std;
-
-vector<string> cards;
-
-class Player
-{
-public:
-	int cardNum;
-	string name;
-	vector<vector<string>> possibleHands;
-	map<string, double> probabilities;
-	vector<string> hand;
-
-	Player(int numCards, string nameP)
-	{
-		name = nameP;
-		cardNum = numCards;
-	}
-
-	void generateHands(int numCards, int i, vector<string> hand)
-	{
-		
-	}
-
-	void removeHands(string a, string b, string c)
-	{
-
-	}
-
-	void updateProbabilities()
-	{
-		int count;
-		vector<string> c;
-		for(int i = 0; i < cards.size(); i++)
-		{
-			count = 0;
-			for(int j = 0; j < possibleHands.size(); j++)
-			{
-				c = possibleHands[j];
-				if(find(c.begin(), c.end(), cards[i]) != c.end())
-				{
-					count++;
-				}
-			}
-			probabilities[cards[i]] = (double)count / possibleHands.size();
-		}
-	}
-
-	double getProbability(string guess)
-	{
-		return probabilities[guess];
-	}
-};
 
 int main()
 {
 	//Guaranteed cards
+	vector<string> cards;
 	cards = {"Rope", "Wrench", "Pistol", "Candlestick", "Pipe", "Dagger",
 			 "Ballroom", "Kitchen", "DiningRoom", "BilliardRoom",
 			 "Lounge", "Library", "Study", "Conservatory", "Hall"};
@@ -133,35 +83,45 @@ int main()
 		}
 	}
 
-	//Combination Generator
-	vector<vector<string>> combos;
-	vector<string> *c;
-	for(int i = 0; i < 21; i++)
+	//Setup players
+	for(int i = 0; i < myPlayers.size(); i++)
 	{
-		for(int j = i+1; j < 21; j++)
-		{
-			for(int k = j + 1; k < 21; k++)
-			{
-				c = new vector<string>;
-				c->push_back(cards[i]);
-				c->push_back(cards[j]);
-				c->push_back(cards[k]);
-				combos.push_back(*c);
-			}
-		}
+		myPlayers[i]->setCardList(cards);
+		myPlayers[i]->generateHands(myPlayers[i]->getNumCards());
 	}
-	cout << combos.size() << endl;
+	myPlayers[0]->updateProbabilities();
+	cout << myPlayers[0]->getProbability("Scarlet");
+
+	return 0;
 
 	//Main logic loop
 	bool won = false;
 	string guess;
 	string check;
+	string answer;
+	string guessP;
+	string guessW;
+	string guessL;
 	while(!won)
 	{
-
+		//Formulate Guess
+		guessP = "Scarlet";
+		guessW = "Gun";
+		guessL = "Lounge";
 
 		//Output
 		cout << guess << endl;
+		for(int i = 0; i < myPlayers.size(); i++)
+		{
+			cout << "Did " << myPlayers[i]->getName() << " say no? ";
+			cin >> answer;
+			if(answer == "y")
+			{
+				//GuessLogic
+			}
+			else
+				myPlayers[i]->removeHands(guessP, guessW, guessL);
+		}
 		cout << "Did you win?";
 		cin >> check;
 		if(check == "y")
